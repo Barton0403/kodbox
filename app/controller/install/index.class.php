@@ -261,6 +261,10 @@ class installIndex extends Controller {
                 $port = Input::get("{$cacheType}Port", 'require');
                 if($cacheType == 'redis') {
                     $conn = $handle->connect($host, $port, 1);
+                    $password = Input::get("{$cacheType}Pwd") ?: '';
+                    if ($password) {
+                        $handle->auth($password);
+                    }
                 }else{
                     $conn = $handle->addServer($host, $port);
                 }
@@ -311,6 +315,7 @@ class installIndex extends Controller {
         if(isset($host) && isset($port)){
             $text[] = "\$config['cache']['{$cacheType}']['host'] = '{$host}';";
             $text[] = "\$config['cache']['{$cacheType}']['port'] = '{$port}';";
+            $text[] = "\$config['cache']['{$cacheType}']['password'] = '{$password}';";
         }
         $file = $this->userSetting;
         if(!@file_exists($file)) @touch($file);
