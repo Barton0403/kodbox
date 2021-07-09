@@ -1,0 +1,38 @@
+{
+  "id": "BTUpload",
+  "name": "BTUpload",
+  "title": "BTUpload",
+  "version": "1.20",
+  "source": {
+    "icon": "{{pluginHost}}static/images/icon.png"
+  },
+  "category": "file",
+  "description": "BTUpload",
+  "auther": {
+    "copyright": "barton",
+    "homePage": "https://www.barton.top"
+  },
+  "configItem": {
+    "pluginAuth": {
+      "type": "userSelect",
+      "value": {
+        "all": 1
+      },
+      "display": "{{LNG['admin.plugin.auth']}}",
+      "desc": "{{LNG['admin.plugin.authDesc']}}",
+      "require": 1
+    },
+	  "fileExt":{
+		  "type":"tags",
+		  "display":"{{LNG['admin.plugin.fileExt']}}",
+		  "desc":"{{LNG['admin.plugin.fileExtDesc']}}",
+		  "value":"txt",
+	  },
+	  "fileSort":{
+		  "type":"number",
+		  "display":"{{LNG['admin.plugin.fileSort']}}",
+		  "desc":"{{LNG['admin.plugin.fileSortDesc']}}",
+		  "value":10,
+	  }
+  }
+}
