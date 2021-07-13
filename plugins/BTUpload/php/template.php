@@ -20,7 +20,6 @@
 </div>
 <script>
     function zTreeOnClick(event, treeId, treeNode) {
-        console.log(treeNode);
         if (!treeNode.isParent) {
             $('#path').val(treeNode.path);
         }
@@ -45,11 +44,10 @@
             type: "post",
             data: {path: $('#path').val(), source: '<?= $path['id'] ?>'},
             success: function(res) {
-                if (res.code === 0) {
-                } else {
-                }
+                alert(res.msg);
             },
             error: function (res) {
+                alert(res.msg);
             },
             complete: function (res) {
             }
