@@ -13,7 +13,7 @@
 <body>
 <div class="">
     <div>
-        <input id="path" type="text" placeholder="地址">
+        <input id="path" type="text" placeholder="地址" style="width: 348px;">
         <button type="button" id="bt_add">添加</button>
     </div>
     <ul id="treeDemo" class="ztree"></ul>
