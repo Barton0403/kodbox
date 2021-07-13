@@ -12,18 +12,48 @@
 </head>
 <body>
 <div class="">
-    <button type="button">添加</button>
+    <div>
+        <input id="path" type="text" placeholder="地址">
+        <button type="button" id="bt_add">添加</button>
+    </div>
     <ul id="treeDemo" class="ztree"></ul>
 </div>
 <script>
+    function zTreeOnClick(event, treeId, treeNode) {
+        console.log(treeNode);
+        if (!treeNode.isParent) {
+            $('#path').val(treeNode.path);
+        }
+    }
+
     var zTreeObj;
     // zTree 的参数配置，深入使用请参考 API 文档（setting 配置详解）
     var setting = {
+        callback: {
+            onClick: zTreeOnClick
+        }
     };
     // zTree 的数据属性，深入使用请参考 API 文档（zTreeNode 节点数据详解）
     var zNodes = <?= json_encode($z_nodes, JSON_UNESCAPED_UNICODE) ?>;
     $(document).ready(function(){
         zTreeObj = $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+    });
+
+    $('#bt_add').click(function () {
+        $.ajax({
+            url: '<?= $this->pluginApi ?>add',
+            type: "post",
+            data: {path: $('#path').val(), source: '<?= $path['id'] ?>'},
+            success: function(res) {
+                if (res.code === 0) {
+                } else {
+                }
+            },
+            error: function (res) {
+            },
+            complete: function (res) {
+            }
+        });
     });
 </script>
 </body>

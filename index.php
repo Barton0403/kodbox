@@ -1,4 +1,6 @@
 <?php
+    include "./vendor/autoload.php";
+
 	ob_start();
 	include ('config/config.php');
 	$app = new Application();

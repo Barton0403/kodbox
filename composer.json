@@ -1,0 +1,17 @@
+{
+    "name": "barton/kodbox",
+    "autoload": {
+        "psr-4": {
+            "Barton\\Kodbox\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "barton",
+            "email": "lichenghao0403@gmail.com"
+        }
+    ],
+    "require": {
+        "topthink/think-orm": "^2.0"
+    }
+}
