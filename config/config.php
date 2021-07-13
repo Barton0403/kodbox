@@ -6,7 +6,7 @@
 * @license http://kodcloud.com/tools/license/license.txt
 */
 
-define('GLOBAL_DEBUG',0);//0 or 1
+define('GLOBAL_DEBUG',1);//0 or 1
 @set_time_limit(3600);//60min pathInfoMuti,search,upload,download...
 @ini_set("max_execution_time",3600);//3600
 @ini_set('request_terminate_timeout', 3600);

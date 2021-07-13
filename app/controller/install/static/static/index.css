@@ -181,7 +181,8 @@
     top: -6px;
     padding-left: 15px;
     text-align: left;
-	min-height: 16px;
+	/* height: 15px; */
+	height: 16px;
 	color:#bcc4d0;
 }
 .install-box  .form-row.item-dbDescMysql>div,
