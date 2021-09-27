@@ -89,12 +89,14 @@ class BTUploadPlugin extends PluginBase{
         $handle = fopen($truepath, "r");
         $fstat = fstat($handle);
         fclose($handle);
+        setlocale(LC_ALL, 'zh_CN.GBK');
+        $basename = end(explode('/', $truepath));
 
         $now = time();
         Db::startTrans();
         try {
             $file_id = Db::name('io_file')->insertGetId([
-                'name' => basename($truepath),
+                'name' => $basename,
                 'size' => $fstat['size'],
                 'ioType' => 1,
                 'path' => $path,
@@ -112,8 +114,8 @@ class BTUploadPlugin extends PluginBase{
                 'createUser' => 2,
                 'modifyUser' => 2,
                 'isFolder' => 0,
-                'name' => basename($truepath),
-                'fileType' => end(explode('.', basename($truepath))),
+                'name' => $basename,
+                'fileType' => end(explode('.', $basename)),
                 'parentID' => $source,
                 'parentLevel' => $parent_level,
                 'fileID' => $file_id,
