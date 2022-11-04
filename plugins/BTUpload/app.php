@@ -57,6 +57,7 @@ class BTUploadPlugin extends PluginBase{
     {
         $files = scandir($dir);
         $z_nodes = [];
+        $sort = [];
         foreach ($files as $file) {
             if (in_array($file, ['.', '..'])) {
                 continue;
@@ -75,7 +76,11 @@ class BTUploadPlugin extends PluginBase{
             }
 
             $z_nodes[] = $node;
+            $sort[] = filectime($dir.'/'.$file) ?: 0;
         }
+
+        // 按创建时间降序
+        array_multisort($sort, SORT_DESC, $z_nodes);
 
         return $z_nodes;
     }
