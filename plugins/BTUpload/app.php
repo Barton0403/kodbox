@@ -85,50 +85,97 @@ class BTUploadPlugin extends PluginBase{
         return $z_nodes;
     }
 
-    public function add()
+    private function parsePath($path)
     {
-        $path = $_POST['path'];
-        $source = $_POST['source'];
-
         $truepath = str_replace('{io:1}/', DATA_PATH.'files/', $path);
         $handle = fopen($truepath, "r");
         $fstat = fstat($handle);
         fclose($handle);
         setlocale(LC_ALL, 'zh_CN.GBK');
-        $basename = end(explode('/', $truepath));
+        $arr = explode('/', $truepath);
+        $basename = end($arr);
+
+        return [
+            'fstat' => $fstat,
+            'basename' => $basename,
+        ];
+    }
+
+    public function add()
+    {
+        $path = $_POST['path'];
+        $source = $_POST['source'];
+
+        $result = $this->parsePath($path);
 
         $now = time();
         Db::startTrans();
         try {
-            $file_id = Db::name('io_file')->insertGetId([
-                'name' => $basename,
-                'size' => $fstat['size'],
-                'ioType' => 1,
+            // 检测是否存在相同文件
+            $file_id = Db::name('io_file')->where(['path' => $path])->value('fileID');
+            if (!$file_id) {
+                $file_id = intval(Db::name('io_file')->insertGetId([
+                    'name' => $result['basename'],
+                    'size' => $result['fstat']['size'],
+                    'ioType' => 1,
+                    'path' => $path,
+                    'hashSimple' => 1,
+                    'hashMd5' => 1,
+                    'linkCount' => 1,
+                    'createTime' => $now,
+                    'modifyTime' => $now,
+                ]));
+            }
+
+            if (Db::name("io_source")->where(['parentID' => $source, 'fileID' => $file_id])->count() == 0) {
+                $parent_level = Db::name('io_source')->where(['sourceID' => $source])->value('parentLevel').$source.',';
+                $arr = explode('.', $result['basename']);
+                Db::name('io_source')->insert([
+                    'sourceHash' => 1,
+                    'targetType' => 1,
+                    'targetID' => 2,
+                    'createUser' => 2,
+                    'modifyUser' => 2,
+                    'isFolder' => 0,
+                    'name' => $result['basename'],
+                    'fileType' => end($arr),
+                    'parentID' => $source,
+                    'parentLevel' => $parent_level,
+                    'fileID' => $file_id,
+                    'isDelete' => 0,
+                    'size' => $result['fstat']['size'],
+                    'createTime' => $now,
+                    'modifyTime' => $now,
+                    'viewTime' => $now,
+                ]);
+            }
+
+            Db::commit();
+        } catch (\Exception $e) {
+            Db::rollback();
+            echo json_encode(['code' => 400, 'msg' => $e->getMessage()], JSON_UNESCAPED_UNICODE);
+            return;
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode(['code' => 200, 'msg' => '添加成功', 'data' => ['file_id' => $file_id]], JSON_UNESCAPED_UNICODE);
+        return;
+    }
+
+    public function updateFile()
+    {
+        $file_id = $_POST['file_id'];
+        $path = $_POST['path'];
+
+        $result = $this->parsePath($path);
+
+        $now = time();
+        Db::startTrans();
+        try {
+            $file_id = Db::name('io_file')->where(['fileID' => $file_id])->update([
+                'name' => $result['basename'],
                 'path' => $path,
-                'hashSimple' => 1,
-                'hashMd5' => 1,
-                'linkCount' => 1,
-                'createTime' => $now,
                 'modifyTime' => $now,
-            ]);
-            $parent_level = Db::name('io_source')->where(['sourceID' => $source])->value('parentLevel').$source.',';
-            Db::name('io_source')->insert([
-                'sourceHash' => 1,
-                'targetType' => 1,
-                'targetID' => 2,
-                'createUser' => 2,
-                'modifyUser' => 2,
-                'isFolder' => 0,
-                'name' => $basename,
-                'fileType' => end(explode('.', $basename)),
-                'parentID' => $source,
-                'parentLevel' => $parent_level,
-                'fileID' => $file_id,
-                'isDelete' => 0,
-                'size' => $fstat['size'],
-                'createTime' => $now,
-                'modifyTime' => $now,
-                'viewTime' => $now,
             ]);
 
             Db::commit();
@@ -139,7 +186,7 @@ class BTUploadPlugin extends PluginBase{
         }
 
         header('Content-Type: application/json');
-        echo json_encode(['code' => 200, 'msg' => '添加成功'], JSON_UNESCAPED_UNICODE);
+        echo json_encode(['code' => 200, 'msg' => '更新成功', 'data' => ['file_id' => $file_id]], JSON_UNESCAPED_UNICODE);
         return;
     }
 }
