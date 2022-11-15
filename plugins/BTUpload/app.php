@@ -127,7 +127,7 @@ class BTUploadPlugin extends PluginBase{
                 ]));
             }
 
-            if (Db::name("io_source")->where(['parentID' => $source, 'fileID' => $file_id])->count() == 0) {
+            if (Db::name("io_source")->where(['parentID' => $source, 'fileID' => $file_id, 'isDelete' => 0])->count() == 0) {
                 $parent_level = Db::name('io_source')->where(['sourceID' => $source])->value('parentLevel').$source.',';
                 $arr = explode('.', $result['basename']);
                 Db::name('io_source')->insert([
